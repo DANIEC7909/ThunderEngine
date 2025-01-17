@@ -1,4 +1,6 @@
 #include "ShaderProgram.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 TE::ShaderProgram::ShaderProgram(const char* _fragmentSource, const char* _vertexSource)
 {
@@ -25,9 +27,19 @@ void TE::ShaderProgram::Compile()
 
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
+	 ViewLoc = glGetUniformLocation(ShaderProgramID, "view");
+	 ModelLoc = glGetUniformLocation(ShaderProgramID, "model");
+	ProjectionLoc = glGetUniformLocation(ShaderProgramID, "projection");
 }
 
 void TE::ShaderProgram::Use()
 {
 	glUseProgram(ShaderProgramID);
+}
+//glm::rotate(model, glm::radians(angle), axis)
+void TE::ShaderProgram::UpdateMVP(Camera* _camera)
+{
+	glUniformMatrix4fv(ViewLoc, 1, GL_FALSE, glm::value_ptr(_camera->GetView()));
+	glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+	glUniformMatrix4fv(ProjectionLoc, 1, GL_FALSE, glm::value_ptr(_camera->GetProjection()));
 }
